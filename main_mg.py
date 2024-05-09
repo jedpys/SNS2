@@ -191,7 +191,6 @@ for i in range(1):  #potem zamień na 5
 
 
 '''
-        
         for i in range(5):
             Wykonujemy kolejne obliczenia, niezależnie dla kolejnych satelitów, obserwowanych
             w danej epoce, czyli przechodzimy do pętli:
@@ -244,6 +243,8 @@ for i in range(1):  #potem zamień na 5
             liczby obserwowanych satelitów, obliczone wartoci współczynników DOP (przynajmniej PDOP)
             
 '''
+# for i in range(5):
+    
 
 
 
@@ -252,3 +253,44 @@ for i in range(1):  #potem zamień na 5
 
 
 
+
+
+
+
+
+
+# jeśli pierwsza iteracja poprawka = 0, else: vvv
+# poprawki troposferyczne po odrzuceniu satelitów poniżej maski elewacji
+
+
+def poprawkaHopfield(el):
+    Hort = 121.161
+    p = 1013.25 * (1 - 0.0000226 * Hort) ** 5.225
+    temp0 = 291.15 - 0.0065 * Hort
+    Rh = 0.5 * m.exp(-0.0006396 * Hort)
+    e = 6.11 * Rh * 10 ** (7.5 * ((temp0 - 273.15)/(temp0 - 35.85)))
+
+
+    delTd = ((10 ** -6) / 5) * ((77.64 * p/t) / m.sin(el**2 + 6.25)) * (40136 + 148.72 * (temp0 - 273.15))      #  elewacja ma być w stopniach
+    delTw = ((10 ** -6) / 5) * ((-12.96 * temp0 + 3.718 * 10**5) / (m.sin(el**2 + 2.25))) * (e / t**2) * 11000  # elewacja ma być w stopniach
+    delT = delTd + delTw
+
+    return delT
+
+
+def poprawkaSaastamoinen(el):
+    Hort = 121.161
+    p = 1013.25 * (1 - 0.0000226 * Hort) ** 5.225
+    temp0 = 291.15 - 0.0065 * Hort
+    Rh = 0.5 * m.exp(-0.0006396 * Hort)
+    e = 6.11 * Rh * 10 ** (7.5 * ((temp0 - 273.15)/(temp0 - 35.85)))
+
+    delTd0 = 0.002277 * p
+    delTw0 = 0.002277 * ((1255 / temp0) + 0.05) * e
+
+    delTd = delTd0 * 1 / (m.sin(el**2 + 6.25))  # el w stopniach
+    delTw = delTw0 * 1 / (m.sin(el**2 + 2.25))  # el w stopniach
+
+    delT = delTw + delTd
+
+    return delT
